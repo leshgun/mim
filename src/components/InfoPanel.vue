@@ -38,12 +38,16 @@
 <style lang="scss" scoped>
   * {
     --panel-background: var(--color-grey-3);
+    --button-background: var(--color-grey-2);
+    --button-color: var(--color-grey-1);
   }
   button {
     width: 100%;
     max-width: 200px;
     user-select: none;
     -webkit-user-select: none;
+    background: var(--button-background);
+    color: var(--button-color);
   }
   .info-panel {
     background: var(--panel-background);
@@ -63,7 +67,6 @@
   }
   .button-1 {
     align-items: center;
-    background-color: #fff;
     border: 2px solid #000;
     cursor: pointer;
     /* font-family: Inter,sans-serif; */
@@ -92,6 +95,38 @@
       border-color: var(--color-blue-2);
       color: var(--color-blue-2);
       fill: var(--color-blue-2);
+    }
+  }
+  .button-2 {
+    background: #FF4742;
+    border: 1px solid #FF4742;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-family: nunito,roboto,proxima-nova,"proxima nova",sans-serif;
+    // font-size: 16px;
+    font-weight: 800;
+    // line-height: 16px;
+    // min-height: 40px;
+    outline: 0;
+    padding: .1rem 0;
+    text-align: center;
+    text-rendering: geometricprecision;
+    text-transform: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    &:hover, &:active {
+      background-color: initial;
+      background-position: 0 0;
+      color: #FF4742;
+    }
+    &:active {
+      opacity: .5;
     }
   }
 </style>

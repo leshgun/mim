@@ -1,0 +1,30 @@
+/* color palette */
+:root {
+  --color-white: #ffffff;
+  --color-black: #181818;
+  --color-indigo: #2c3e50;
+
+  --color-blue: #556bae;
+  --color-blue-2: #06f;
+  --color-grey: #C3C3C3;
+  --color-grey-2: #6C6C6C;
+  --color-grey-3: #2e2e2e;
+
+  --color-text-light: var(--color-white);
+  --color-text-light-2: rgba(235, 235, 235, 0.64);
+  --color-text-dark: var(--color-indigo);
+  --color-text-dark-2: rgba(60, 60, 60, 0.66);
+}
+
+/* semantic color variables */
+:root {
+  --color-background: var(--color-white);
+  --color-text: var(--color-text-dark);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: var(--color-black);
+    --color-text: var(--color-text-light-2);
+  }
+}

@@ -61,11 +61,12 @@
     --maze-grid-color: var(--color-black);
     --maze-grid-size: 1px;
 
-    --cell-unknown-background: var(--color-grey-2);
-    --cell-wall-background: var(--color-grey-3);
-    --cell-empty-background: var(--color-grey);
-    --cell-visited-background: var(--color-blue);
     --cell-border: 1px solid var(--color-black);
+    --cell-character-background: red;
+    --cell-empty-background: var(--color-grey);
+    --cell-unknown-background: var(--color-grey-2);
+    --cell-visited-background: var(--color-blue);
+    --cell-wall-background: var(--color-grey-3);
   }
 
   #maze {
@@ -89,6 +90,10 @@
 
   .cell-type_3 {
     background: var(--cell-visited-background) !important;
+  }
+
+  .cell-type_4 {
+    background: var(--cell-character-background) !important;
   }
 
 </style>

@@ -14,6 +14,11 @@ const router = createRouter({
       path: '/classic',
       name: 'classic',
       component: GameClassicView
+    },
+    {
+      path: '/infinity',
+      name: 'infinity',
+      component: HomeView
     }
   ]
 })

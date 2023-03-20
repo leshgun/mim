@@ -3,6 +3,7 @@ export enum CELLTYPE {
   EMPTY,
   WALL,
   VISITED,
+  CHARACTER
 }
 
 export type TCell = {
@@ -10,20 +11,20 @@ export type TCell = {
   y : number
 }
 
-interface ICell {
-  cellType: CELLTYPE,
-  coords: TCell
+export interface ICell {
+  cellType?: CELLTYPE,
+  coords?: TCell
 };
 
 class Cell implements ICell {
   
   cellType: CELLTYPE = CELLTYPE.UNKNOWN;
-  coords: TCell = {x: 0, y: 0};
+  coords: TCell = { x: 0, y: 0 };
 
   constructor (props?: ICell) {
     if (props) {
-      this.cellType = props.cellType;
-      this.coords = props.coords;
+      this.cellType = props.cellType || CELLTYPE.UNKNOWN;
+      this.coords = props.coords || { x: 0, y: 0 };
     }
   }
 

@@ -1,5 +1,6 @@
-import Cell, {CELLTYPE} from '@/utils/Cell'
 import MyRandom from '@/utils/random'
+import Cell, {CELLTYPE} from '@/utils/Cell'
+import Character from '@/utils/Character'
 // import type {TCell} from '@/utils/Cell'
 
 interface IMaze {
@@ -7,7 +8,7 @@ interface IMaze {
   columns: number,
   generateMaze(): Promise<void>,
   getMap(): number[][],
-  initMaze(): Promise<void>,
+  initMaze(): void,
 };
 
 type TMaze = Cell[][];
@@ -24,11 +25,14 @@ class Maze implements IMaze {
   maze: TMaze = [];
   
   private mrandom: MyRandom;
+  private character: Character;
+
 
   constructor (rows: number, columns: number) {
     this.rows = rows;
     this.columns = columns;
     this.mrandom = new MyRandom();
+    this.character = new Character();
   }
 
   private depthFirst (current_cell:Cell, prev_cell?:Cell):void {
@@ -72,13 +76,14 @@ class Maze implements IMaze {
   }
 
   public async generateMaze (start_cell?:CellCoords):Promise<void> {
-    await this.initMaze()
+    this.initMaze()
     if (!start_cell)
       start_cell = {
         x: this.mrandom.randomInterval(0, this.rows - 1),
         y: this.mrandom.randomInterval(0, this.columns - 1)
       }
     this.depthFirst(this.getCellByCoords(start_cell));
+    this.initCharacter();
   }
 
   private getCellByCoords (coords:CellCoords):Cell {
@@ -118,20 +123,40 @@ class Maze implements IMaze {
     return neighbours;
   }
 
-  public async initMaze ():Promise<void> {
-    if (!this.maze.length) {
-      console.log("initMaze");
-      let maze : TMaze = [];
-      for (let i = 0; i < this.rows; ++i) {
-        maze.push(new Array(this.columns).fill(0).map((_, j) => new Cell({
-          coords: {x: j, y: i},
-          cellType: CELLTYPE.UNKNOWN
-        })))
-      }
-      this.maze = maze;
-    } else {
-      this.maze.forEach(row => row.forEach(cell => cell.resetCell()));
+  public initMaze ():void {
+    let maze : TMaze = [];
+    for (let i = 0; i < this.rows; ++i) {
+      maze.push(new Array(this.columns).fill(0).map((_, j) => new Cell({
+        coords: {x: j, y: i},
+        cellType: CELLTYPE.UNKNOWN
+      })))
     }
+    this.maze = maze;
+  }
+
+  private placeCharacter (character:Character, position:CellCoords):void {
+    if (this.maze[position.y][position.x].cellType === CELLTYPE.EMPTY) {
+      this.maze[position.y][position.x] = character;
+      this.character.coords = position;
+    }
+  }
+
+  private initCharacter ():void {
+    const free_cells:Cell[] = [];
+    this.maze.forEach(row => {
+      row.forEach(cell => {
+        if (cell.cellType === CELLTYPE.VISITED)
+          cell.cellType = CELLTYPE.EMPTY;
+        if (cell.cellType === CELLTYPE.EMPTY)
+          free_cells.push(cell);
+      });
+    });
+
+    const position = free_cells[
+      this.mrandom.randomInterval(0, free_cells.length - 1)
+    ].coords;
+
+    this.placeCharacter(this.character, position);
   }
 
 }

@@ -22,7 +22,7 @@ import { ref } from "vue";
           {"row": ["Steps", 5]},
           {"row": ["Loh?", "Net"]},
           {"button": {
-            "class": "button-1", 
+            "class": "button-2", 
             "value": "Refresh",
             "trigger": () => {store.generateMap()}
           }}
@@ -48,15 +48,6 @@ import { ref } from "vue";
 
 
 <style scoped>
-
-  * {
-    --color-black: #000000;
-    --color-blue: #556bae;
-    --color-blue-2: #06f;
-    --color-grey: #C3C3C3;
-    --color-grey-2: #6C6C6C;
-    --color-grey-3: #2e2e2e;
-  }
 
   main {
     width: 100%;

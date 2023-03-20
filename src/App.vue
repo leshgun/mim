@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { RouterLink, RouterView } from 'vue-router'
+  import Header from '@/components/Header.vue';
   import { mapStores } from "pinia";
   import { useMazeStore } from './stores/maze';
 </script>
@@ -16,9 +17,13 @@
 
 <template>
   
-  <div class="wrapper">
-    <RouterView />
-  </div>
+  <Header>
+    <RouterLink to="/">home</RouterLink>
+    <RouterLink to="classic">Classic</RouterLink>
+    <RouterLink to="infinity">Infinity</RouterLink>
+  </Header>
+  <div id="wrapper"><RouterView /></div>
+  
 
 </template>
 
@@ -26,14 +31,18 @@
 
 
 
-<style scoped>
+<style lang="scss" scoped>
 
-  .wrapper {
-    min-height: 100vh;
+  Header {
+    --header-height: 50px;
+    --header-font-size: 16px;
+  }
+
+  #wrapper {
     width: 100%;
     max-width: 900px;
-    
     margin: 0 auto;
+    flex-grow: 1;
 
     display: flex;
     flex-direction: row;
