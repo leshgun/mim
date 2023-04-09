@@ -1,20 +1,33 @@
 <script lang="ts" setup>
   import { useMazeStore } from '@/stores/maze'
-  import Maze from '@/utils/Maze'
+  import Maze from '@/core/Maze'
+  import Timer from '@/core/Timer'
   import Grid from '@/components/Grid.vue';
-  import Character from './Character.vue';
 </script>
 
 
 
 <script lang="ts">
+
+  enum KEYCODES {
+    Left = 37,
+    Up = 38,
+    Right = 39,
+    Down = 40,
+  }
+
+  const maze_mods = {
+    'Smoke': 2
+  }
+
   export default {
 
     data() {
-      let store = useMazeStore()
+      const store = useMazeStore();
       return {
         store: useMazeStore(),
-        maze: new Maze(store.rows, store.columns),
+        maze: new Maze(store.rows, store.columns, maze_mods),
+        timer: new Timer(),
         mazeMap: <Number[][]> []
       }
     },
@@ -22,32 +35,58 @@
     mounted() {
       this.store.generateMap = () => this.generateMap();
       this.generateMap();
+      // setTimeout(() => {this.timer.reset()}, 10000)
     },
 
     methods: {
-      async generateMap() {
-        await this.maze.generateMaze();
+      clearInfo() {
+        this.timer.reset();
+        this.store.character_steps = 0;
+      },
+      async updateMap() {
         this.mazeMap = this.maze.getMap();
-      }
+      },
+      async generateMap() {
+        await this.maze.generate();
+        this.clearInfo();
+        this.updateMap();
+      },
+      async characterMove(dir:KEYCODES) {
+        let [x, y] = [0, 0];
+        switch (dir) {
+          case KEYCODES.Up:    y = -1; break;
+          case KEYCODES.Down:  y =  1; break;
+          case KEYCODES.Left:  x = -1; break;
+          case KEYCODES.Right: x =  1; break;
+        }
+        if (x || y) {
+          this.maze.characterMove({ x: x, y: y });
+          this.updateMap();
+          this.store.character_steps += 1;
+        }
+      },
+      keyListener(event:any) {
+        if (event.key.includes("Arrow"))
+          this.characterMove(event.keyCode);
+      },
     },
 
-    // watch: {
-    //   maze: {
-    //     handler() {
-    //       this.mazeMap = this.maze.getMap();
-    //     },
-    //     deep: true
-    //   }
-    // }
+    watch: {
+      timer: {
+        handler() {
+          this.store.game_timer = this.timer.getTime();
+        },
+        deep: true
+      }
+    }
   }
 </script>
 
 
 
 <template>
-  <div id="maze" >
+  <div id="maze" tabindex="0" @keydown="keyListener">
     <Grid :grid-map="mazeMap" :cell-size="store.cellSize" />
-    <!-- <Character :size="store.cellSize" :color="'red'" /> -->
   </div>
 </template>
 
@@ -64,6 +103,7 @@
     --cell-border: 1px solid var(--color-black);
     --cell-character-background: red;
     --cell-empty-background: var(--color-grey);
+    --cell-smoke-background: rgba(100, 100, 6);
     --cell-unknown-background: var(--color-grey-2);
     --cell-visited-background: var(--color-blue);
     --cell-wall-background: var(--color-grey-3);
@@ -94,6 +134,14 @@
 
   .cell-type_4 {
     background: var(--cell-character-background) !important;
+  }
+
+  .cell-type_100 {
+    background: var(--cell-character-background) !important;
+  }
+
+  .cell-type_101 {
+    background: var(--cell-smoke-background) !important;
   }
 
 </style>

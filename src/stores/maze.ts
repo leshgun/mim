@@ -18,11 +18,15 @@ import { defineStore } from 'pinia'
 
 export const useMazeStore = defineStore('maze', () => {
 
-  const cellSize = 20;
-  const rows = 30;
-  const columns = 30;
+  const cellSize: number = 20;
+  const character_steps: number = 0;
+  const columns: number = 30;
+  const modificators = {};
+  const rows: number = 30;
+  const game_timer: string = '';
+
   const generateMap = () =>
     console.log("The map function has not been initialized...")
 
-  return { cellSize, rows, columns, generateMap }
+  return { cellSize, rows, columns, generateMap, character_steps, game_timer }
 })

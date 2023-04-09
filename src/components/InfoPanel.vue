@@ -1,17 +1,13 @@
-<script lang="ts" setup>
-  
-</script>
-
-
 <script lang="ts">
   export default {
     props: {
       items: {
-        type: Array<any>,
-        defaut: []
-      }
-    }
-  }
+          type: Array<any>,
+          defaut: []
+      },
+      steps: Number
+    },
+}
 </script>
 
 
@@ -19,16 +15,16 @@
 <template> 
   <div class="info-panel">
     <div class="item" v-for="item in items">
+      <div v-if="item.type === 'row'" class="item__name">{{ item.name }}</div>
+      <div v-if="item.type === 'row'" class="item__value">{{ item.value }}</div>
       <button 
-        v-if="item.button" 
-        :class="item.button.class" 
+        v-if="item.type === 'button'" 
+        :class="item.class" 
         role="button"
-        @click="item.button.trigger()"
+        @click="item.trigger()"
         >
-          {{ item.button.value }}
+          {{ item.value }}
       </button>
-      <div v-if="item.row" class="item_name">{{ item.row[0] }}</div>
-      <div v-if="item.row" class="item_value">{{ item.row[1] }}</div>
     </div>
   </div>
 </template>

@@ -5,7 +5,6 @@
 
   // import { mapStores } from "pinia";
   import { useMazeStore } from "@/stores/maze";
-import { ref } from "vue";
 
 </script>
 
@@ -18,17 +17,30 @@ import { ref } from "vue";
       const store = useMazeStore()
       return {
         store: store,
-        infoItems: [
-          {"row": ["Steps", 5]},
-          {"row": ["Loh?", "Net"]},
-          {"button": {
-            "class": "button-2", 
-            "value": "Refresh",
-            "trigger": () => {store.generateMap()}
-          }}
-        ]
       }
     },
+    computed: {
+      infoItems() {
+        return [
+          {
+            type: "row",
+            name: "Timer:",
+            value: this.store.game_timer
+          },
+          {
+            "type": "row",
+            "name": "Steps",
+            "value": this.store.character_steps
+          },
+          {
+            "type": "button",
+            "class": "button-2", 
+            "value": "Refresh",
+            "trigger": () => {this.store.generateMap()}
+          }
+        ];
+      }
+    }
   }
 </script>
 
