@@ -38,6 +38,8 @@ class Maze implements IMaze {
   private mrandom: MyRandom;
   private character: Character;
 
+  public maze_completed: boolean = false;
+
 
   constructor (rows: number, columns: number, modificators?: TModificators) {
     this.rows = rows || this.rows;
@@ -68,24 +70,10 @@ class Maze implements IMaze {
     return true;
   }
 
-  private characterInit ():void {
-    const free_cells:Cell[] = this.maze.reduce((row, acc) => 
-      acc.concat(row.filter(cell => cell.cellType === CELLTYPE.EMPTY)),
-      []
-    );
-    const new_coords = free_cells[
-      this.mrandom.randomInterval(0, free_cells.length - 1)
-    ].coords;
-    this.character.coords = new_coords;
-    const new_cell = this.getCellByCoords(new_coords);
+  private async characterInit ():Promise<void> {
+    const new_cell = this.getFreeCell();
+    this.character.coords = new_cell.coords;
     new_cell.addItem(this.character);
-    
-    if (this.modificators["Smoke"]) {
-      // Remove smokes
-      this.getNeighbours(new_cell, true).forEach(neighbour => neighbour.deleteItem(
-        neighbour.items.filter(item => item.id === ITEMID.Smoke)[0]
-      ));
-    }
   }
 
   public characterMove (coords:CellCoords):void {
@@ -98,12 +86,15 @@ class Maze implements IMaze {
       this.character.move(coords);
       const new_cell = this.getCellByCoords(new_coords);
       new_cell.addItem(this.character);
-      if (this.modificators["Smoke"]) {
-        // Remove smokes
-        this.getNeighbours(new_cell, true).forEach(neighbour => neighbour.deleteItem(
-          neighbour.items.filter(item => item.id === ITEMID.Smoke)[0]
-        ));
-      }
+      this.smokeDeleteAround(new_cell);
+      this.checkMazeComplete();
+    }
+  }
+
+  private checkMazeComplete ():void {
+    if (this.getCellByCoords(this.character.coords).items.some(x => x.id === 102)) {
+      this.maze_completed = true;
+      console.log('======= Completed! =======');
     }
   }
 
@@ -147,6 +138,10 @@ class Maze implements IMaze {
       );
   }
 
+  private async finishInit ():Promise<void> {
+    this.getFreeCell().addItem(new Item({id: 102}));
+  }
+
   public async generate (start_cell?:CellCoords):Promise<void> {
     this.initMaze()
     if (!start_cell)
@@ -156,7 +151,6 @@ class Maze implements IMaze {
       }
     this.depthFirst(this.getCellByCoords(start_cell));
     this.generated();
-    this.characterInit();
   }
 
   private generated ():void {
@@ -168,6 +162,9 @@ class Maze implements IMaze {
           cell.cellType = CELLTYPE.EMPTY;
       });
     });
+    this.characterInit();
+    this.finishInit();
+    this.modificatorsInit();
   }
 
   private getCellByCoords (coords:CellCoords):Cell {
@@ -178,6 +175,20 @@ class Maze implements IMaze {
     return this.character.coords;
   }
 
+  private getFreeCell ():Cell {
+    const free_cells = this.getFreeCells();
+    return free_cells[
+      this.mrandom.randomInterval(0, free_cells.length - 1)
+    ];
+  }
+
+  private getFreeCells ():Cell[] {
+    return this.maze.reduce((row, acc) => 
+      acc.concat(row.filter(cell => cell.cellType === CELLTYPE.EMPTY)),
+      []
+    );
+  }
+
   public getMap ():number[][] {
     // init new map
     let maze : TMap = [];
@@ -186,8 +197,16 @@ class Maze implements IMaze {
     this.maze.forEach(row => {
       maze.push(row.map(cell => {
         // place items on the map
+        if (cell.getItems(100).length)
+          return this.character.id;
+        // if smoke return smoke
+        if (cell.getItems(101).length) {
+          return 101
+        }
+        // return item on the top of the stack
         if (cell.items.length)
           return cell.items[cell.items.length-1].id;
+        // return cell
         return cell.cellType;
       }));
     });
@@ -243,6 +262,26 @@ class Maze implements IMaze {
     if (coords.y < 0 || coords.y >= this.rows)
       return false;
     return true;
+  }
+
+  private modificatorsInit (): void {
+    if (this.modificators["Smoke"]) {
+      // Remove smokes
+      this.getNeighbours(this.getCellByCoords(this.character.coords), true)
+        .forEach(neighbour => neighbour.deleteItem(
+          neighbour.items.filter(item => item.id === ITEMID.Smoke)[0]
+        ));
+    }
+  }
+
+  private async smokeDeleteAround (cell:Cell):Promise<void> {
+    if (this.modificators["Smoke"]) {
+      // Remove smokes
+      this.getNeighbours(cell, true).forEach(neighbour => {
+        const _s = neighbour.getItems(ITEMID.Smoke);
+        if (_s.length) neighbour.deleteItem(_s[0]);
+      });
+    }
   }
 
   private sumCoords (coord1:CellCoords, coord2:CellCoords):CellCoords {

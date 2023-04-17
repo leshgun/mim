@@ -33,9 +33,16 @@
     },
 
     mounted() {
+      window.addEventListener('keydown', this.keyListener);
+      console.log('Add event listener!');
       this.store.generateMap = () => this.generateMap();
       this.generateMap();
       // setTimeout(() => {this.timer.reset()}, 10000)
+    },
+
+    unmounted() {
+      window.removeEventListener('keydown', this.keyListener);
+      console.log('remove event listener')
     },
 
     methods: {
@@ -66,6 +73,7 @@
         }
       },
       keyListener(event:any) {
+        event.preventDefault();
         if (event.key.includes("Arrow"))
           this.characterMove(event.keyCode);
       },
@@ -85,7 +93,7 @@
 
 
 <template>
-  <div id="maze" tabindex="0" @keydown="keyListener">
+  <div id="maze" tabindex="0">
     <Grid :grid-map="mazeMap" :cell-size="store.cellSize" />
   </div>
 </template>
@@ -103,6 +111,7 @@
     --cell-border: 1px solid var(--color-black);
     --cell-character-background: red;
     --cell-empty-background: var(--color-grey);
+    --cell-finish-background: green;
     --cell-smoke-background: rgba(100, 100, 6);
     --cell-unknown-background: var(--color-grey-2);
     --cell-visited-background: var(--color-blue);
@@ -142,6 +151,10 @@
 
   .cell-type_101 {
     background: var(--cell-smoke-background) !important;
+  }
+
+  .cell-type_102 {
+    background: var(--cell-finish-background) !important;
   }
 
 </style>

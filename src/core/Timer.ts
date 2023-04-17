@@ -47,21 +47,21 @@ class Timer implements ITimer {
   //   return new_time;
   // }
 
-  public getTime(format: TimeFormat = TimeFormat.mm_ss): any {
-    const _time = ['00', '00', ('0' + this.counter % 60).slice(-2)];
+  public getTime(format: TimeFormat = TimeFormat.hh_mm_ss): any {
+    const _time = [('0' + this.counter % 60).slice(-2)];
     if (this.counter > 60)
-      _time[1] = ('0' + Math.floor(this.counter / 60) % 60).slice(-2)
+      _time.push(('0' + Math.floor(this.counter / 60) % 60).slice(-2));
     if (this.counter > 3600)
-      _time[0] = ('0' + Math.floor(this.counter / 60 / 60)).slice(-2)
+      _time.push(('0' + Math.floor(this.counter / 60 / 60)).slice(-2));
     switch (format) {
-      case TimeFormat.hh_mm_ss: return _time.join(':');
-      case TimeFormat.mm_ss: return _time.slice(-2).join(':')
+      case TimeFormat.mm_ss: return _time.reverse().slice(-2).join(':');
     }
-    return '' + this.counter
+    return _time.reverse().join(':');
   }
 
   private async tick(): Promise<void> {
     this.counter = (this.counter || 0) + this.step;
+    // this.counter += 3600
     this.timer = setTimeout(() => this.tick(), (1 / this.update_frequency)*1000);
   }
 

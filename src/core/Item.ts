@@ -1,6 +1,7 @@
 export enum ITEMID {
   Character = 100,
-  Smoke = 101
+  Smoke = 101,
+  Finish = 102
 }
 
 
